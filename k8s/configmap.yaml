@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mekong-salinity-config
+  labels:
+    app: mekong-salinity
+    component: config
+data:
+  DATABASE_HOST: "postgres-service"
+  DATABASE_PORT: "5432"
+  DATABASE_NAME: "mekong_salinity_db"
+  POSTGRES_DB: "mekong_salinity_db"
+  BACKEND_URL: "http://backend-service:8000"
+  NEXT_PUBLIC_API_URL: "http://backend-service:8000"
+  ALGORITHM: "HS256"
+  ACCESS_TOKEN_EXPIRE_MINUTES: "30"
