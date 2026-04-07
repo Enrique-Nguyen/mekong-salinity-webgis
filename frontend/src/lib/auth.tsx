@@ -17,6 +17,7 @@ export interface AuthContextType {
   user: User | null
   isLoading: boolean
   isAuthenticated: boolean
+  isAdmin: boolean
   login: (username: string, password: string) => Promise<void>
   logout: () => void
   register: (username: string, email: string, password: string) => Promise<User>
@@ -43,6 +44,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [isLoading, setIsLoading] = useState(true)
 
   const isAuthenticated = !!user
+  const isAdmin = user?.role === 'admin'
 
   // Fetch current user from /auth/me
   const fetchUser = useCallback(async (): Promise<User | null> => {
@@ -128,6 +130,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     user,
     isLoading,
     isAuthenticated,
+    isAdmin,
     login,
     logout,
     register,

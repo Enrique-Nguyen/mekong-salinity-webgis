@@ -3,6 +3,7 @@
 import { useState, useRef, useCallback, DragEvent, ChangeEvent } from 'react'
 import api from '@/lib/api'
 import { useAuth } from '@/lib/auth'
+import FileFormatGuide from './FileFormatGuide'
 
 // Max file size: 10MB
 const MAX_FILE_SIZE = 10 * 1024 * 1024
@@ -57,6 +58,7 @@ export default function UploadForm() {
   const [isUploading, setIsUploading] = useState(false)
   const [validationError, setValidationError] = useState<string | null>(null)
   const [uploadResult, setUploadResult] = useState<UploadResult | null>(null)
+  const [showFormatGuide, setShowFormatGuide] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   // Validate file type and size
@@ -247,10 +249,26 @@ export default function UploadForm() {
     <div className="w-full bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden">
       {/* Header */}
       <div className="px-6 py-4 bg-gradient-to-r from-blue-50 to-cyan-50 border-b border-slate-200">
-        <h2 className="text-lg font-semibold text-blue-900">Tải lên dữ liệu</h2>
-        <p className="text-sm text-slate-600 mt-1">
-          Chấp nhận file CSV hoặc XLSX (tối đa 10MB)
-        </p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-lg font-semibold text-blue-900">Tải lên dữ liệu</h2>
+            <p className="text-sm text-slate-600 mt-1">
+              Chấp nhận file CSV hoặc XLSX (tối đa 10MB)
+            </p>
+          </div>
+          <button
+            onClick={() => setShowFormatGuide(true)}
+            className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-blue-600 
+                       bg-blue-100 hover:bg-blue-200 rounded-lg transition-colors"
+            title="Xem hướng dẫn định dạng file"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Hướng dẫn
+          </button>
+        </div>
       </div>
 
       {/* Upload Area */}
@@ -511,6 +529,12 @@ export default function UploadForm() {
           </button>
         </div>
       </div>
+
+      {/* File Format Guide Modal */}
+      <FileFormatGuide 
+        isOpen={showFormatGuide} 
+        onClose={() => setShowFormatGuide(false)} 
+      />
     </div>
   )
 }
