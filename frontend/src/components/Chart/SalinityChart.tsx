@@ -201,16 +201,16 @@ export default function SalinityChart() {
         },
         title: {
           display: true,
-          text: 'Biểu đồ độ mặn theo thời gian',
+          text: 'Độ mặn theo thời gian',
           font: {
             family: 'system-ui, sans-serif',
-            size: 16,
+            size: 14,
             weight: 'bold' as const,
           },
           color: '#1e40af',
           padding: {
-            top: 10,
-            bottom: 20,
+            top: 5,
+            bottom: 10,
           },
         },
         tooltip: {
@@ -295,27 +295,27 @@ export default function SalinityChart() {
   return (
     <div className="w-full bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden">
       {/* Header */}
-      <div className="px-6 py-4 bg-gradient-to-r from-blue-50 to-cyan-50 border-b border-slate-200">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <h2 className="text-lg font-semibold text-blue-900">
-            Biểu đồ độ mặn theo thời gian
+      <div className="px-4 py-3 bg-gradient-to-r from-blue-50 to-cyan-50 border-b border-slate-200">
+        <div className="flex items-center justify-between gap-3">
+          <h2 className="text-base font-semibold text-blue-900">
+            Biểu đồ độ mặn
           </h2>
 
           {/* Station Selector */}
           <div className="flex items-center gap-2">
             <label
               htmlFor="station-select"
-              className="text-sm font-medium text-slate-600 whitespace-nowrap"
+              className="text-xs font-medium text-slate-600 whitespace-nowrap"
             >
-              Chọn trạm:
+              Trạm:
             </label>
             <select
               id="station-select"
               value={selectedStation}
               onChange={(e) => setSelectedStation(e.target.value)}
-              className="px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm 
+              className="px-2 py-1.5 bg-white border border-slate-300 rounded-lg text-sm 
                          focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
-                         transition-colors cursor-pointer min-w-[160px]"
+                         transition-colors cursor-pointer min-w-[140px]"
               disabled={loading && stations.length === 0}
             >
               {stations.length === 0 ? (
@@ -333,14 +333,14 @@ export default function SalinityChart() {
       </div>
 
       {/* Chart Container */}
-      <div className="p-6">
+      <div className="p-4">
         {loading ? (
-          <div className="flex flex-col items-center justify-center h-[400px] gap-3">
+          <div className="flex flex-col items-center justify-center h-[300px] gap-3">
             <div className="w-10 h-10 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin" />
             <p className="text-sm text-slate-500">Đang tải dữ liệu...</p>
           </div>
         ) : error ? (
-          <div className="flex flex-col items-center justify-center h-[400px] gap-3">
+          <div className="flex flex-col items-center justify-center h-[300px] gap-3">
             <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center">
               <svg
                 className="w-6 h-6 text-red-500"
@@ -366,7 +366,7 @@ export default function SalinityChart() {
             </button>
           </div>
         ) : observations.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-[400px] gap-3">
+          <div className="flex flex-col items-center justify-center h-[300px] gap-3">
             <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center">
               <svg
                 className="w-6 h-6 text-slate-400"
@@ -385,7 +385,7 @@ export default function SalinityChart() {
             <p className="text-sm text-slate-500">Không có dữ liệu cho trạm này</p>
           </div>
         ) : (
-          <div className="h-[400px]">
+          <div className="h-[300px]">
             <Line data={chartData} options={chartOptions} />
           </div>
         )}

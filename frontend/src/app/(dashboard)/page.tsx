@@ -147,10 +147,10 @@ export default function DashboardPage() {
       </div>
 
       {/* Main Content */}
-      <main className="flex-1 max-w-[1920px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div className="grid grid-cols-1 lg:grid-cols-10 gap-6 h-full">
+      <main className="flex-1 max-w-[1920px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div className="grid grid-cols-1 lg:grid-cols-10 gap-4 h-full">
           {/* Left Panel - Map (70%) */}
-          <div className="lg:col-span-7 min-h-[500px] lg:min-h-[calc(100vh-280px)]">
+          <div className="lg:col-span-7 min-h-[400px] lg:min-h-[calc(100vh-320px)] lg:max-h-[600px]">
             <div className="bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden h-full">
               <SalinityMap
                 startDate={startDate || undefined}
@@ -160,9 +160,9 @@ export default function DashboardPage() {
           </div>
 
           {/* Right Panel - Chart & Upload (30%) */}
-          <div className="lg:col-span-3 flex flex-col gap-6">
+          <div className="lg:col-span-3 flex flex-col gap-4">
             {/* Chart */}
-            <div className="flex-1 min-h-[400px]">
+            <div className="flex-1 min-h-[350px]">
               <SalinityChart />
             </div>
 
