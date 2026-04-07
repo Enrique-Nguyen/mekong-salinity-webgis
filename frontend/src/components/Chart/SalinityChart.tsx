@@ -15,7 +15,6 @@ import {
 } from 'chart.js'
 import { Line } from 'react-chartjs-2'
 import api from '@/lib/api'
-import Cookies from 'js-cookie'
 
 // Register Chart.js components
 ChartJS.register(
@@ -80,21 +79,41 @@ export default function SalinityChart() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  // Fetch stations list first
+  // Fetch stations from observations data
   useEffect(() => {
     const fetchStations = async () => {
       try {
-        const token = Cookies.get('access_token')
-        const response = await api.get<Station[]>('/api/stations', {
-          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        // Use api instance which already handles auth token from localStorage
+        const response = await api.get<PaginatedResponse>('/api/observations', {
+          params: {
+            page: 1,
+            page_size: 5000,
+          },
         })
-        setStations(response.data)
-        if (response.data.length > 0) {
-          setSelectedStation(response.data[0].id)
+        
+        // Extract unique stations from observations
+        const stationMap = new Map<string, string>()
+        response.data.items.forEach((obs: any) => {
+          if (!stationMap.has(obs.station_id)) {
+            stationMap.set(obs.station_id, obs.station_name || obs.station_id)
+          }
+        })
+        
+        const uniqueStations = Array.from(stationMap.entries()).map(([id, name]) => ({
+          id,
+          name,
+        }))
+        
+        setStations(uniqueStations)
+        if (uniqueStations.length > 0) {
+          setSelectedStation(uniqueStations[0].id)
+        } else {
+          setLoading(false)
         }
       } catch (err) {
         console.error('Failed to fetch stations:', err)
-        // Fallback: will extract stations from observations
+        setError('Không thể tải danh sách trạm')
+        setLoading(false)
       }
     }
     fetchStations()
@@ -109,24 +128,15 @@ export default function SalinityChart() {
       setError(null)
 
       try {
-        const token = Cookies.get('access_token')
+        // Use api instance which already handles auth token from localStorage
         const response = await api.get<PaginatedResponse>('/api/observations', {
           params: {
             station_id: selectedStation,
             page: 1,
             page_size: 1000,
           },
-          headers: token ? { Authorization: `Bearer ${token}` } : {},
         })
         setObservations(response.data.items)
-
-        // Extract unique stations from observations if stations list is empty
-        if (stations.length === 0 && response.data.items.length > 0) {
-          const uniqueStationIds = Array.from(
-            new Set(response.data.items.map((o) => o.station_id))
-          )
-          setStations(uniqueStationIds.map((id) => ({ id, name: id })))
-        }
       } catch (err) {
         setError('Không thể tải dữ liệu. Vui lòng thử lại sau.')
         console.error('Failed to fetch observations:', err)
@@ -136,7 +146,7 @@ export default function SalinityChart() {
     }
 
     fetchObservations()
-  }, [selectedStation, stations.length])
+  }, [selectedStation])
 
   // Prepare chart data
   const chartData = useMemo(() => {
