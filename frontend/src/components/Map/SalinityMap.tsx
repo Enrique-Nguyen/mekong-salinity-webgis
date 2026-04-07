@@ -133,8 +133,11 @@ export default function SalinityMap({ startDate, endDate, onMarkerClick }: Salin
           page_size: '1000',
         })
         
-        if (startDate) params.append('start_date', startDate)
-        if (endDate) params.append('end_date', endDate)
+        // Convert date to datetime format with appropriate time
+        // start_date: beginning of day (00:00:00)
+        // end_date: end of day (23:59:59)
+        if (startDate) params.append('start_date', `${startDate}T00:00:00`)
+        if (endDate) params.append('end_date', `${endDate}T23:59:59`)
 
         const response = await api.get<ObservationsResponse>(`/api/observations?${params}`, {
           headers: token ? { Authorization: `Bearer ${token}` } : {},
@@ -173,8 +176,15 @@ export default function SalinityMap({ startDate, endDate, onMarkerClick }: Salin
 
       {/* Error message */}
       {error && (
-        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-[1000] px-4 py-2 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
-          {error}
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-[1000] px-4 py-2 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm flex items-center gap-2">
+          <span>{error}</span>
+          <button
+            onClick={() => setError(null)}
+            className="ml-2 text-red-500 hover:text-red-700 font-bold text-lg leading-none"
+            aria-label="Đóng thông báo"
+          >
+            ×
+          </button>
         </div>
       )}
 
