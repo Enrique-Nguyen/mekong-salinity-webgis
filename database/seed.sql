@@ -8,7 +8,7 @@ VALUES (
     'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
     'admin',
     'admin@example.com',
-    '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/X4.FVnWxJxRu5G6HS', -- password: admin123
+    '$2b$12$sd/aIdR.yIEP00fdwpe2B.k561/V6y1bHaU1b7/bbwd/i2cyr63iO', -- password: admin123
     'admin',
     true
 );
