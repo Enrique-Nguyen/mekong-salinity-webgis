@@ -7,6 +7,7 @@ import 'leaflet.heat'
 import api from '@/lib/api'
 import Cookies from 'js-cookie'
 import 'leaflet/dist/leaflet.css'
+import { useDataRefresh } from '@/lib/DataRefreshContext'
 
 // ĐBSCL center coordinates
 const DBSCL_CENTER: [number, number] = [9.8, 105.8]
@@ -119,6 +120,7 @@ export default function SalinityMap({ startDate, endDate, onMarkerClick }: Salin
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [showHeatmap, setShowHeatmap] = useState(false)
+  const { refreshKey } = useDataRefresh()
 
   useEffect(() => {
     const fetchObservations = async () => {
@@ -127,23 +129,17 @@ export default function SalinityMap({ startDate, endDate, onMarkerClick }: Salin
 
       try {
         const token = Cookies.get('access_token')
-        
-        const params = new URLSearchParams({
-          page: '1',
-          page_size: '1000',
-        })
-        
-        // Convert date to datetime format with appropriate time
-        // start_date: beginning of day (00:00:00)
-        // end_date: end of day (23:59:59)
+
+        const params = new URLSearchParams()
+
         if (startDate) params.append('start_date', `${startDate}T00:00:00`)
         if (endDate) params.append('end_date', `${endDate}T23:59:59`)
 
-        const response = await api.get<ObservationsResponse>(`/api/observations?${params}`, {
+        const response = await api.get<Observation[]>(`/api/observations/latest?${params}`, {
           headers: token ? { Authorization: `Bearer ${token}` } : {},
         })
 
-        setObservations(response.data.items)
+        setObservations(response.data)
       } catch (err) {
         console.error('Failed to fetch observations:', err)
         setError('Không thể tải dữ liệu quan trắc')
@@ -153,7 +149,7 @@ export default function SalinityMap({ startDate, endDate, onMarkerClick }: Salin
     }
 
     fetchObservations()
-  }, [startDate, endDate])
+  }, [startDate, endDate, refreshKey])
 
   // Prepare heatmap data: [lat, lng, intensity]
   const heatmapData: Array<[number, number, number]> = observations.map((obs) => [

@@ -3,6 +3,7 @@
 import { useState, useRef, useCallback, DragEvent, ChangeEvent } from 'react'
 import api from '@/lib/api'
 import { useAuth } from '@/lib/auth'
+import { useDataRefresh } from '@/lib/DataRefreshContext'
 import FileFormatGuide from './FileFormatGuide'
 
 // Max file size: 10MB
@@ -53,6 +54,7 @@ interface UploadResult {
 
 export default function UploadForm() {
   const { isAuthenticated } = useAuth()
+  const { triggerRefresh } = useDataRefresh()
   const [file, setFile] = useState<File | null>(null)
   const [isDragging, setIsDragging] = useState(false)
   const [isUploading, setIsUploading] = useState(false)
@@ -178,6 +180,7 @@ export default function UploadForm() {
         if (fileInputRef.current) {
           fileInputRef.current.value = ''
         }
+        triggerRefresh()
       }
     } catch (err: unknown) {
       let errorMessage = 'Đã xảy ra lỗi khi tải lên. Vui lòng thử lại.'

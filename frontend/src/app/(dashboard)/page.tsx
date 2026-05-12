@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth } from '@/lib/auth'
+import { DataRefreshProvider } from '@/lib/DataRefreshContext'
 import { SalinityMap } from '@/components/Map'
 import { SalinityChart } from '@/components/Chart'
 import { UploadForm } from '@/components/Upload'
@@ -46,6 +47,7 @@ export default function DashboardPage() {
   }
 
   return (
+    <DataRefreshProvider>
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-cyan-50 flex flex-col">
       {/* Header */}
       <header className="bg-white/80 backdrop-blur-md border-b border-slate-200 shadow-sm sticky top-0 z-50">
@@ -188,5 +190,6 @@ export default function DashboardPage() {
         </div>
       </footer>
     </div>
+    </DataRefreshProvider>
   )
 }

@@ -15,6 +15,7 @@ import {
 } from 'chart.js'
 import { Line } from 'react-chartjs-2'
 import api from '@/lib/api'
+import { useDataRefresh } from '@/lib/DataRefreshContext'
 
 // Register Chart.js components
 ChartJS.register(
@@ -78,35 +79,37 @@ export default function SalinityChart() {
   const [selectedStation, setSelectedStation] = useState<string>('')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const { refreshKey } = useDataRefresh()
 
   // Fetch stations from observations data
   useEffect(() => {
     const fetchStations = async () => {
       try {
-        // Use api instance which already handles auth token from localStorage
         const response = await api.get<PaginatedResponse>('/api/observations', {
           params: {
             page: 1,
             page_size: 5000,
           },
         })
-        
-        // Extract unique stations from observations
+
         const stationMap = new Map<string, string>()
         response.data.items.forEach((obs: any) => {
           if (!stationMap.has(obs.station_id)) {
             stationMap.set(obs.station_id, obs.station_name || obs.station_id)
           }
         })
-        
+
         const uniqueStations = Array.from(stationMap.entries()).map(([id, name]) => ({
           id,
           name,
         }))
-        
+
         setStations(uniqueStations)
         if (uniqueStations.length > 0) {
-          setSelectedStation(uniqueStations[0].id)
+          setSelectedStation((prev) => {
+            const stillExists = uniqueStations.some((s) => s.id === prev)
+            return stillExists ? prev : uniqueStations[0].id
+          })
         } else {
           setLoading(false)
         }
@@ -117,7 +120,7 @@ export default function SalinityChart() {
       }
     }
     fetchStations()
-  }, [])
+  }, [refreshKey])
 
   // Fetch observations when station changes
   useEffect(() => {
@@ -146,7 +149,7 @@ export default function SalinityChart() {
     }
 
     fetchObservations()
-  }, [selectedStation])
+  }, [selectedStation, refreshKey])
 
   // Prepare chart data
   const chartData = useMemo(() => {
