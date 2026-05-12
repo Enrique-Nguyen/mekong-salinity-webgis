@@ -2,7 +2,7 @@ from typing import List, Optional, Tuple
 from uuid import UUID
 from datetime import datetime
 from sqlalchemy.orm import Session
-from sqlalchemy import func
+from sqlalchemy import func, distinct
 from geoalchemy2.functions import ST_MakeEnvelope, ST_Within
 from .base import BaseRepository
 from ..models.observation import SalinityObservation
@@ -74,6 +74,29 @@ class ObservationRepository(BaseRepository[SalinityObservation]):
                 self.db.commit()
         self.db.commit()  # Final commit
         return count
+
+    def get_latest_by_station(
+        self,
+        start_date: Optional[datetime] = None,
+        end_date: Optional[datetime] = None,
+    ) -> List[SalinityObservation]:
+        """Get the latest observation for each station.
+
+        Uses PostgreSQL DISTINCT ON for efficient grouping.
+        """
+        query = self.db.query(SalinityObservation).distinct(
+            SalinityObservation.station_id
+        ).order_by(
+            SalinityObservation.station_id,
+            SalinityObservation.measured_at.desc(),
+        )
+
+        if start_date:
+            query = query.filter(SalinityObservation.measured_at >= start_date)
+        if end_date:
+            query = query.filter(SalinityObservation.measured_at <= end_date)
+
+        return query.all()
 
     def get_stats(self) -> dict:
         """Get aggregate statistics."""

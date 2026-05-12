@@ -88,6 +88,24 @@ def get_observations(
     )
 
 
+@router.get("/latest", response_model=List[ObservationResponse])
+def get_latest_observations(
+    start_date: Optional[datetime] = Query(None, description="Filter observations from this date"),
+    end_date: Optional[datetime] = Query(None, description="Filter observations until this date"),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
+):
+    """
+    Get the latest observation for each station.
+
+    Returns one observation per station (the most recent one by measured_at).
+    Optionally filter by time range.
+    """
+    repo = ObservationRepository(db)
+    items = repo.get_latest_by_station(start_date=start_date, end_date=end_date)
+    return [ObservationResponse.model_validate(item) for item in items]
+
+
 @router.get("/stats", response_model=ObservationStatsResponse)
 def get_observation_stats(
     db: Session = Depends(get_db),

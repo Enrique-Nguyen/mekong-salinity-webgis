@@ -32,7 +32,7 @@ CREATE TABLE uploads (
     file_type VARCHAR(10) NOT NULL CHECK (file_type IN ('csv', 'xlsx')),
     file_path VARCHAR(500) NOT NULL,
     uploaded_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
-    status VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'processing', 'completed', 'failed')),
+    status VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'processing', 'completed', 'failed', 'cleared')),
     total_rows INTEGER DEFAULT 0,
     valid_rows INTEGER DEFAULT 0,
     invalid_rows INTEGER DEFAULT 0

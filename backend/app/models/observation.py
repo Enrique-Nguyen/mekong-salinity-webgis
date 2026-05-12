@@ -2,7 +2,7 @@ import uuid
 from sqlalchemy import Column, String, Numeric, ForeignKey, DateTime
 from sqlalchemy.dialects.postgresql import UUID
 from geoalchemy2 import Geometry
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, backref
 from ..core.database import Base
 
 
@@ -26,4 +26,4 @@ class SalinityObservation(Base):
     longitude = Column(Numeric(9, 6), nullable=False)
     geom = Column(Geometry(geometry_type="POINT", srid=4326))
 
-    upload = relationship("Upload", backref="observations")
+    upload = relationship("Upload", backref=backref("observations", cascade="all, delete-orphan"))
